@@ -36,7 +36,7 @@ def index():
         if msg.text == 'users':
             tel_send_message(msg.msgChat.id,User.list())
         else:
-            tel_send_message(msg.msgChat.id,  "Привет я тестовый димкабот-1!")
+            tel_send_message(msg.msgChat.id,  "Сообщение принято. Вот оно: \n "+msg.text)
 
         return Response('ok', status=200)
     else:

@@ -58,10 +58,13 @@ class Message:
         else:
             msg.msgFrom = [u for u in users if u.id == message['message']['from']['id']][0]
         msg.msgChat.__dict__ = message['message']['chat']
-        msg.text = message['message']['text']
+        if 'text' in message['message']:
+            msg.text = message['message']['text']
+        else:
+            msg.text = ''
         chat_id = message['message']['chat']['id']
-        txt = message['message']['text']
+
         print("chat_id-->", chat_id)
-        print("txt-->", txt)
+        print("txt-->", msg.text)
         return msg
         # return chat_id, txt
