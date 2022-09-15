@@ -3,7 +3,9 @@ from flask import Flask
 from flask import Response
 import configparser
 from flask import request
-
+from users import User
+from users import Chat
+from users import Message
 
 config = configparser.ConfigParser()
 config.read('config/main.ini')
@@ -12,13 +14,6 @@ TOKEN = config["AUTH"]["bot_token"]
 app = Flask(__name__)
 
 
-def parse_message(message):
-    print("message-->",message)
-    chat_id = message['message']['chat']['id']
-    txt = message['message']['text']
-    print("chat_id-->", chat_id)
-    print("txt-->", txt)
-    return chat_id,txt
 
 
 def tel_send_message(chat_id, text):
@@ -37,10 +32,11 @@ def index():
     if request.method == 'POST':
         msg = request.get_json()
         print(msg)
-
-        chat_id, txt = parse_message(msg)
-
-        tel_send_message(chat_id, "Привет я тестовый димкабот-1!")
+        msg: Message = Message.parse_message(msg)
+        if msg.text == 'users':
+            tel_send_message(msg.msgChat.id,User.list())
+        else:
+            tel_send_message(msg.msgChat.id,  "Привет я тестовый димкабот-1!")
 
         return Response('ok', status=200)
     else:
