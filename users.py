@@ -1,6 +1,6 @@
 import datetime
 import json
-
+from telegram import Telegram
 
 users = []
 # TODO: finish user database. Dump and load on start.
@@ -44,10 +44,11 @@ class Message:
         self.msgChat: Chat = Chat()
         self.date: datetime
         self.text: str
+        self.files = []
         return
 
     @staticmethod
-    def parse_message(message):
+    def parse_message(tgram: Telegram, message):
         print("message-->", message)
         msg = Message()
 
@@ -64,7 +65,13 @@ class Message:
             msg.text = ''
         chat_id = message['message']['chat']['id']
 
+        if 'photo' in message['message']:
+            for c_photo in message['message']['photo']:
+                msg.files.append(tgram.get_file_by_id(c_photo['file_id']))
+
         print("chat_id-->", chat_id)
         print("txt-->", msg.text)
         return msg
         # return chat_id, txt
+
+
