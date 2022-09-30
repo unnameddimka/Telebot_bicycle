@@ -7,6 +7,7 @@ from users import User
 from users import Chat
 from users import Message
 from telegram import Telegram
+import data
 
 config = configparser.ConfigParser()
 config.read('config/main.ini')
@@ -25,7 +26,11 @@ def index():
         if msg.text == 'users':
             tgram.tel_send_message(msg.msgChat.id, User.list())
         if msg.text.lower()[0:4:] == 'file':
-            tgram.tel_send_message(msg.msgChat.id, "тут будет запрос файла от бота.")
+            #  tgram.tel_send_message(msg.msgChat.id, "тут будет запрос файла от бота.")
+            file_id = msg.text.split(' ')[1]
+            contnt = data.get_file_by_id(file_id)
+            tgram.send_photo(msg.msgChat.id, contnt)
+            #  TODO: make file retrieval by id mechanism.
         else:
             tgram.tel_send_message(msg.msgChat.id,  "Сообщение принято. Вот оно: \n "+msg.text)
             if len(msg.files) != 0:
@@ -33,7 +38,7 @@ def index():
                 for f in msg.files:
                     text = text+f+'\n'
                 tgram.tel_send_message(msg.msgChat.id, text)
-        #  TODO: make file retreival by id mechanism.
+
         return Response('ok', status=200)
     else:
         return "Привет я тестовый димкабот-1!"

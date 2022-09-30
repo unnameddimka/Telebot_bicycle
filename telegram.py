@@ -2,6 +2,7 @@ import uuid
 
 import requests
 from urllib import request
+import data
 
 
 class Telegram:
@@ -31,11 +32,19 @@ class Telegram:
         url = f'https://api.telegram.org/file/bot{self.token}/{resp["file_path"]}'
         fileId = str(uuid.uuid1())
         print(f'opening url {url}')
-        local_path = f'./data/files/{fileId}.jpg'  # TODO: handle extension
         response = request.urlopen(url)
-        res = response.read()
-        file = open(local_path, 'wb')
-        file.write(res)
-        file.close()
+        data.put_file_by_id(fileId, response.read())
         return fileId
+
+    def send_photo(self, chat_id, content):
+        url = f'https://api.telegram.org/bot{self.token}/sendPhoto'
+        payload = {
+            'chat_id': chat_id,
+            'photo': content
+        }
+        post_data = {'chat_id': chat_id}
+        post_file = {'photo': content}
+        r = requests.post(url, data=post_data, files=post_file)
+
+        return r
 
