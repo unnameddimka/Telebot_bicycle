@@ -17,6 +17,7 @@ config.read('config/main.ini')
 
 app = Flask(__name__)
 
+global tgram, board
 tgram = Telegram(config["AUTH"]["bot_token"])
 
 board = imgboard.Board(config["NET"]["img_url"])
