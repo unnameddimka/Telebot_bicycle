@@ -1,4 +1,5 @@
 import json
+from os import path
 
 import requests
 from flask import Flask
@@ -19,8 +20,12 @@ app = Flask(__name__)
 
 global tgram, board
 tgram = Telegram(config["AUTH"]["bot_token"])
+if path.isfile(f'{config["DATA"]["file_path"]}/board.js'):
+    board_file = open(f'{config["DATA"]["file_path"]}/board.js', 'r')
+    board = imgboard.Board.from_json(json.load(board_file))
 
-board = imgboard.Board(config["NET"]["img_url"])
+else:
+    board = imgboard.Board(config["NET"]["img_url"])
 
 
 @app.route('/', methods=['GET', 'POST'])

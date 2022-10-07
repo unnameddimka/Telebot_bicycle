@@ -20,6 +20,14 @@ class Board:
             new_post.date = datetime.datetime.today()
             self.posts.append(new_post)
 
+    @staticmethod
+    def from_json(js_dict: dict):
+        brd = Board(js_dict["img_url"])
+        for pst in js_dict["posts"]:
+            postObj = Post.from_json(pst)
+            brd.posts.append(postObj)
+
+        return brd
 
 class Post:
     imgURL: str
@@ -33,6 +41,14 @@ class Post:
         self.user = ''
         self.date = datetime.datetime(2022,1,1)
 
+    @staticmethod
+    def from_json(js_dict: dict):
+        pst = Post()
+        pst.text = js_dict["text"]
+        pst.user = js_dict["user"]
+        pst.imgURL = js_dict["imgURL"]
+        pst.date = datetime.datetime.strptime(js_dict["date"], '%Y-%m-%d %H:%M:%S.%f')
+        return pst
 
 class BoardEncoder(json.JSONEncoder):
     def default(self, obj):
