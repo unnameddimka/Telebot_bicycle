@@ -62,7 +62,7 @@ def index():
 @app.route('/board', methods=['GET'])
 def board_get():
     str_return = json.dumps(board.posts, cls=imgboard.BoardEncoder)
-    return Response(str_return, status=200, headers='Access-Control-Allow-Origin : *')
+    return Response(str_return, status=200, headers={"Access-Control-Allow-Origin": "*"})
     pass
 
 
