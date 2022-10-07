@@ -14,7 +14,12 @@ class Board:
     def create_post(self, msg: Message):
         for file_id in msg.files:
             new_post = Post()
-            new_post.user = msg.msgFrom.username
+            if "username" in msg.msgFrom.__dict__.keys():
+                new_post.user = msg.msgFrom.username
+            elif "first_name" in msg.msgFrom.__dict__.keys():
+                new_post.user = msg.msgFrom.first_name
+            else:
+                new_post.user = msg.msgFrom.id
             new_post.text = msg.text
             new_post.imgURL = self.img_url+'/'+file_id+'.jpg'
             new_post.date = datetime.datetime.today()
