@@ -1,3 +1,5 @@
+import json
+
 import requests
 from flask import Flask
 from flask import Response
@@ -7,6 +9,7 @@ from users import User
 from users import Chat
 from users import Message
 from telegram import Telegram
+import imgboard
 import data
 
 config = configparser.ConfigParser()
@@ -15,6 +18,8 @@ config.read('config/main.ini')
 app = Flask(__name__)
 
 tgram = Telegram(config["AUTH"]["bot_token"])
+
+board = imgboard.Board(config["NET"]["img_url"])
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -30,7 +35,7 @@ def index():
             file_id = msg.text.split(' ')[1]
             contnt = data.get_file_by_id(file_id)
             tgram.send_photo(msg.msgChat.id, contnt)
-            #  TODO: make file retrieval by id mechanism.
+
         else:
             tgram.tel_send_message(msg.msgChat.id,  "Сообщение принято. Вот оно: \n "+msg.text)
             if len(msg.files) != 0:
@@ -38,10 +43,21 @@ def index():
                 for f in msg.files:
                     text = text+f+'\n'
                 tgram.tel_send_message(msg.msgChat.id, text)
-
+                board.create_post(msg)
+                #saving board
+                boardfile = open(f'{config["DATA"]["file_path"]}/board.js', 'w')
+                boardfile.write(json.dumps(board, cls=imgboard.BoardEncoder))
+                boardfile.close()
         return Response('ok', status=200)
     else:
         return "Привет я тестовый димкабот-1!"
+
+
+@app.route('/board', methods=['GET'])
+def board_get():
+    str_return = json.dumps(board.posts, cls=imgboard.BoardEncoder)
+    return Response(str_return, status=200)
+    pass
 
 
 if __name__ == '__main__':
